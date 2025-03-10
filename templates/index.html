@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Scheduler</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #25D366;
+            --primary-dark: #128C7E;
+            --secondary-color: #34B7F1;
+            --text-color: #2C3E50;
+            --text-light: #7F8C8D;
+            --background-color: #F8F9FA;
+            --white: #FFFFFF;
+            --danger: #E74C3C;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.171);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        input[type="text"]:focus,
+        input[type="datetime-local"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .button-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .button-danger {
+            background-color: var(--danger);
+        }
+
+        .button-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .button-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        th {
+            background-color: #F7FAFC;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: var(--warning);
+            color: #000000;
+        }
+
+        .status-sent {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .status-error {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-card {
+            flex: 1;
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-action-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 12px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .item-card {
+            background-color: var(--white);
+            border: 1px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .item-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .item-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .item-details {
+            flex: 1;
+        }
+
+        .item-details h3 {
+            font-size: 1rem;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .item-details p {
+            margin: 0.25rem 0 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .button-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .delete-btn {
+            background-color: #FEE2E2;
+            color: var(--danger);
+        }
+
+        .delete-btn:hover {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            background-color: #F8FAFC;
+            border-radius: var(--border-radius);
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Adicione este estilo para melhorar a responsividade */
+        @media (max-width: 768px) {
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .item-content {
+                flex-direction: column;
+            }
+
+            .item-actions {
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+        }
+
+        /* Adicione uma animação para feedback visual ao excluir */
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+
+        .item-card.deleting {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        .item-number {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background-color: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .item-card {
+            position: relative;
+        }
+
+        /* Melhoria na exibição do texto da mensagem no select */
+        select option {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            padding: 8px;
+        }
+
+        /* Estilo para destacar o número no select */
+        select option::before {
+            content: attr(data-number);
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        .number-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .numeros-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .numero-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .remove-numero {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .remove-numero:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #numeros_input {
+            min-height: 100px;
+            font-family: monospace;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert {
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Animação para as mensagens flash */
+        .alert {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
+
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+
+        .select-trigger {
+            background-color: var(--white);
+            border: 2px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .select-trigger:hover {
+            border-color: var(--primary-color);
+        }
+
+        .select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            margin-top: 0.5rem;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow: hidden;
+        }
+
+        .select-dropdown.active {
+            display: block;
+        }
+
+        .search-box {
+            padding: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 2.5rem 0.8rem 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .search-box .fa-search {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .options-container {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .option {
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .option:hover {
+            background-color: rgba(37, 211, 102, 0.1);
+            transform: translateX(5px);
+        }
+
+        .option i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .option-info {
+            flex: 1;
+        }
+
+        .option-name {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .option-number {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .no-results {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-option {
+            padding: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            transition: background-color 0.3s ease;
+        }
+
+        .message-option:last-child {
+            border-bottom: none;
+        }
+
+        .message-option:hover {
+            background-color: rgba(37, 211, 102, 0.1);
+        }
+
+        .message-option.selected {
+            background-color: #E6F7FF;
+        }
+
+        .options-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .options-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .option-message {
+            line-height: 1.4;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .options-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .select-dropdown .options-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .message-option .fa-comment {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            align-self: flex-start;
+            margin-top: 0.2rem;
+        }
+
+        /* Estilo para destacar termos encontrados na busca */
+        .highlight {
+            background-color: rgba(37, 211, 102, 0.2);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .toggle-contacts {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-contacts:hover {
+            background-color: rgba(37, 211, 102, 0.1);
+        }
+
+        .toggle-contacts.active {
+            transform: rotate(180deg);
+        }
+
+        .message-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+            line-height: 1.5;
+            max-width: 100%;
+        }
+
+        .message-ellipsis {
+            color: var(--text-light);
+        }
+
+        .show-more {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0;
+            margin-left: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .show-more:hover {
+            text-decoration: underline;
+        }
+
+        .toggle-messages {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-messages:hover {
+            background-color: rgba(37, 211, 102, 0.1);
+        }
+
+        .button-container {
+            display: flex;
+            margin-bottom: 20px; /* Espaço entre o botão e o próximo bloco */
+        }
+        
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="header">
+        <h1><i class="fab fa-whatsapp"></i> Agendador WhatsApp</h1>
+    </div>
+
+    <div class="container">
+        <div class="quick-actions">
+            <div class="quick-action-card" onclick="document.getElementById('agendamento-form').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-calendar-plus"></i>
+                <h3>Novo Agendamento</h3>
+                <p>Agende uma nova mensagem</p>
+            </div>
+            <div class="quick-action-card" onclick="document.getElementById('contatos-form').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-address-book"></i>
+                <h3>Gerenciar Contatos</h3>
+                <p>Adicione ou edite contatos</p>
+            </div>
+            <div class="quick-action-card" onclick="document.getElementById('mensagens-form').scrollIntoView({behavior: 'smooth'})">
+                <i class="fas fa-comments"></i>
+                <h3>Mensagens Padrão</h3>
+                <p>Gerencie suas mensagens</p>
+            </div>
+        </div>
+
+        <div class="card" id="agendamento-form">
+            <h2><i class="fas fa-calendar-alt"></i> Novo Agendamento</h2>
+            <form method="POST" action="{{ url_for('agendar') }}">
+                <div class="form-group">
+                    <label for="responsavel">Responsável:</label>
+                    <input type="text" id="responsavel" name="responsavel" required placeholder="Nome do responsável">
+                </div>
+
+                <div class="form-group">
+                    <label>Número(s):</label>
+                    <div class="number-input-container">
+                        <div class="custom-select">
+                            <div class="select-trigger" id="selectTrigger">
+                                <span>Selecione um contato</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="select-dropdown" id="selectDropdown">
+                                <div class="search-box">
+                                    <input type="text" placeholder="Buscar contato..." id="searchContatos">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="options-container">
+                                    {% for contato in numeros_gravados %}
+                                    <div class="option" data-value="{{ contato.numero }}" data-nome="{{ contato.nome }}">
+                                        <i class="fas fa-user"></i>
+                                        <div class="option-info">
+                                            <div class="option-name">{{ contato.nome }}</div>
+                                            <div class="option-number">{{ contato.numero }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="no-results" style="display: none;">
+                                        <i class="fas fa-search"></i>
+                                        <p>Nenhum contato encontrado</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <textarea id="numeros_input" name="numeros_input" placeholder="Digite ou cole os números (um por linha)&#10;Exemplo:&#10;+5511999999999&#10;+5511988888888"></textarea>
+                    </div>
+                    <div id="numeros_preview" class="numeros-preview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mensagem_select">Mensagem:</label>
+                    <div class="custom-select">
+                        <div class="select-trigger" id="mensagemTrigger">
+                            <span>Selecione uma mensagem</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="select-dropdown" id="mensagemDropdown">
+                            <div class="search-box">
+                                <input type="text" placeholder="Buscar mensagem..." id="searchMensagens">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="options-container">
+                                {% for mensagem in mensagens_gravadas %}
+                                <div class="option message-option" data-value="{{ mensagem }}">
+                                    <i class="fas fa-comment"></i>
+                                    <div class="option-info">
+                                        <div class="option-message">
+                                            #{{ loop.index }} - {{ mensagem[:50] }}{% if mensagem|length > 50 %}...{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="no-results" style="display: none;">
+                                    <i class="fas fa-search"></i>
+                                    <p>Nenhuma mensagem encontrada</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Textarea para a mensagem -->
+                    <textarea id="mensagem_input" name="mensagem_input" placeholder="Ou digite a mensagem"></textarea>
+                    
+                    <!-- Botão para inserir a variável {{nome}} na mensagem -->
+                    <button type="button" id="btnInserirNome" onclick="inserirNome()" class="inserir-nome-btn">
+                        Inserir nome
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="data">Data:</label>
+                    <input type="date" id="data" name="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="hora">Hora:</label>
+                    <input type="time" id="hora" name="hora" required>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit" class="button">
+                        <i class="fas fa-paper-plane"></i> Agendar Mensagem
+                    </button>
+                </div>
+            </form>
+
+        <div class="card" id="contatos-form">
+            <h2><i class="fas fa-user-plus"></i> Adicionar Novo Contato</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" name="nome" id="nome" placeholder="Nome do contato">
+                </div>
+                <div class="form-group">
+                    <label for="numero">Número:</label>
+                    <input type="text" name="numero" id="numero" placeholder="+55DDD999999999">
+                </div>
+                <button type="submit" name="adicionar_numero" class="button button-outline">
+                    <i class="fas fa-plus"></i> Adicionar Contato
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="contatosHeader" style="cursor: pointer;">
+                <div class="header-content">
+                    <h2><i class="fas fa-address-book"></i> Contatos Salvos</h2>
+                    <button class="toggle-contacts" id="toggleContacts">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="contatosBody" style="display: none;">
+                <div class="items-grid">
+                    {% if numeros_gravados %}
+                        {% for contato in numeros_gravados %}
+                        <div class="item-card">
+                            <div class="item-content">
+                                <div class="item-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <div class="item-details">
+                                    <h3>{{ contato.nome }}</h3>
+                                    <p>{{ contato.numero }}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <a href="{{ url_for('excluir_numero', index=loop.index0) }}"
+                                   class="button-icon delete-btn"
+                                   onclick="return confirm('Tem certeza que deseja excluir este contato?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>Nenhum contato cadastrado</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" id="mensagens-form">
+            <h2><i class="fas fa-comment-medical"></i> Adicionar Nova Mensagem</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="nova_mensagem">Mensagem:</label>
+                    <textarea name="nova_mensagem" id="nova_mensagem" placeholder="Digite a nova mensagem padrão"></textarea>
+                    <!-- Botão para inserir a variável {{nome}} no textarea -->
+                    <button type="button" id="btnInserirNomeNovaMensagem" onclick="inserirNomeNovaMensagem()" class="inserir-nome-btn">
+                        Inserir nome
+                    </button>
+                </div>
+                <button type="submit" name="adicionar_mensagem" class="button button-outline">
+                    <i class="fas fa-plus"></i> Adicionar Mensagem
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="mensagensHeader" style="cursor: pointer;">
+                <div class="header-content">
+                    <h2><i class="fas fa-comment-dots"></i> Mensagens Salvas</h2>
+                    <button class="toggle-messages" id="toggleMessages">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="mensagensBody" style="display: none;">
+                <div class="items-grid">
+                    {% for mensagem in mensagens_gravadas %}
+                    <div class="item-card">
+                        <div class="item-content">
+                            <div class="item-number">#{{ loop.index }}</div>
+                            <div class="item-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="item-details">
+                                <p class="message-text">
+                                    {{ mensagem[:100] }}
+                                    {% if mensagem|length > 100 %}
+                                    <span class="message-ellipsis">...</span>
+                                    <button class="show-more" onclick="toggleMessage(this)" 
+                                            data-full-message="{{ mensagem }}">
+                                        Ver mais
+                                    </button>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <a href="{{ url_for('excluir_mensagem', index=loop.index0) }}"
+                            class="button-icon delete-btn"
+                            onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <p>Nenhuma mensagem cadastrada</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/logs" class="button button-secondary">
+                <i class="fas fa-history"></i> Ver Histórico
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Funções básicas de atualização
+        function atualizarNumero(select) {
+            const numeroInput = document.getElementById('numero_input');
+            if (select.value) {
+                numeroInput.value = select.value;
+            }
+        }
+
+        function atualizarMensagem(select) {
+            const mensagemInput = document.getElementById('mensagem_input');
+            if (select.value) {
+                mensagemInput.value = select.value;
+            }
+        }
+
+        // Funções para múltiplos números
+        const numerosInput = document.getElementById('numeros_input');
+        const numerosPreview = document.getElementById('numeros_preview');
+        
+        function atualizarNumeros(select) {
+            if (select.value) {
+                const numeroAtual = select.value;
+                const numerosAtuais = numerosInput.value.split('\n').filter(n => n.trim());
+                
+                if (!numerosAtuais.includes(numeroAtual)) {
+                    if (numerosInput.value && numerosInput.value.trim()) {
+                        numerosInput.value += '\n' + numeroAtual;
+                    } else {
+                        numerosInput.value = numeroAtual;
+                    }
+                }
+                
+                atualizarPreview();
+                select.value = ''; // Reset select
+            }
+        }
+        
+        function removerNumero(numero) {
+            const numeros = numerosInput.value.split('\n').filter(n => n.trim());
+            const index = numeros.indexOf(numero);
+            if (index > -1) {
+                numeros.splice(index, 1);
+                numerosInput.value = numeros.join('\n');
+                atualizarPreview();
+            }
+        }
+        
+        function atualizarPreview() {
+            const numeros = numerosInput.value.split('\n').filter(n => n.trim());
+            numerosPreview.innerHTML = numeros.map(numero => `
+                <div class="numero-tag">
+                    ${numero}
+                    <button type="button" onclick="removerNumero('${numero}')" class="remove-numero">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        numerosInput.addEventListener('input', atualizarPreview);
+        
+        // Validação do formulário de agendamento
+        document.querySelector('form[action="{{ url_for("agendar") }}"]').addEventListener('submit', function(e) {
+            const numeros = numerosInput.value.split('\n').filter(n => n.trim());
+            if (numeros.length === 0) {
+                e.preventDefault();
+                alert('Por favor, adicione pelo menos um número.');
+                return;
+            }
+            
+            const mensagem = document.getElementById('mensagem_input').value.trim();
+            if (!mensagem) {
+                e.preventDefault();
+                alert('Por favor, digite uma mensagem.');
+                return;
+            }
+            
+            if (!confirm(`Você está prestes a agendar uma mensagem para ${numeros.length} número(s). Deseja continuar?`)) {
+                e.preventDefault();
+            }
+        });
+
+        // Animação de exclusão
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (confirm(this.getAttribute('data-confirm') || 'Tem certeza que deseja excluir este item?')) {
+                    e.preventDefault();
+                    const card = this.closest('.item-card');
+                    card.classList.add('deleting');
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 300);
+                }
+            });
+        });
+
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.animation = 'fadeOut 0.5s ease-out forwards';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuração de Dropdown Genérica
+            function setupDropdown({ triggerId, dropdownId, searchId, inputId, context }) {
+                const trigger = document.getElementById(triggerId);
+                const dropdown = document.getElementById(dropdownId);
+                const searchInput = document.getElementById(searchId);
+                const options = dropdown.querySelectorAll('.option');
+                const noResults = dropdown.querySelector('.no-results');
+                const inputField = document.getElementById(inputId);
+
+                // Abrir/fechar dropdown
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeAllDropdowns();
+                    dropdown.classList.toggle('active');
+                    if (dropdown.classList.contains('active')) {
+                        searchInput.focus();
+                        searchInput.value = '';
+                        filterOptions('');
+                    }
+                });
+
+                // Filtrar opções
+                function filterOptions(searchTerm) {
+                    searchTerm = searchTerm.toLowerCase().trim();
+                    let hasResults = false;
+
+                    options.forEach(option => {
+                        if (option.classList.contains('no-results')) return;
+
+                        let searchContent;
+                        if (context === 'contato') {
+                            const nome = option.getAttribute('data-nome')?.toLowerCase() || '';
+                            const numero = option.getAttribute('data-value')?.toLowerCase() || '';
+                            searchContent = nome + ' ' + numero;
+                        } else {
+                            searchContent = option.getAttribute('data-value')?.toLowerCase() || '';
+                        }
+
+                        if (searchContent.includes(searchTerm)) {
+                            option.style.display = 'flex';
+                            hasResults = true;
+                            
+                            // Destacar texto encontrado
+                            if (context === 'contato') {
+                                const nomeEl = option.querySelector('.option-name');
+                                const numeroEl = option.querySelector('.option-number');
+                                if (nomeEl && option.getAttribute('data-nome')) {
+                                    nomeEl.textContent = option.getAttribute('data-nome');
+                                }
+                                if (numeroEl && option.getAttribute('data-value')) {
+                                    numeroEl.textContent = option.getAttribute('data-value');
+                                }
+                            }
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+
+                    noResults.style.display = hasResults ? 'none' : 'block';
+                }
+
+                // Selecionar opção
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (this.classList.contains('no-results')) return;
+
+                        const value = this.getAttribute('data-value');
+                        
+                        if (context === 'contato') {
+                            // Lógica para contatos
+                            const numerosAtuais = inputField.value.split('\n').filter(n => n.trim());
+                            if (!numerosAtuais.includes(value)) {
+                                inputField.value = numerosAtuais.length > 0 ? 
+                                    inputField.value + '\n' + value : value;
+                                if (typeof atualizarPreview === 'function') {
+                                    atualizarPreview();
+                                }
+                            }
+                            trigger.querySelector('span').textContent = 'Selecione um contato';
+                        } else {
+                            // Lógica para mensagens
+                            inputField.value = value;
+                            trigger.querySelector('span').textContent = 'Mensagem #' + 
+                                (Array.from(options).indexOf(this) + 1);
+                        }
+
+                        dropdown.classList.remove('active');
+                        searchInput.value = '';
+                        filterOptions('');
+                    });
+                });
+
+                // Atualizar busca ao digitar
+                searchInput.addEventListener('input', function() {
+                    filterOptions(this.value);
+                });
+            }
+
+            // Fechar todos os dropdowns
+            function closeAllDropdowns() {
+                document.querySelectorAll('.select-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+
+            // Fechar ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.custom-select')) {
+                    closeAllDropdowns();
+                }
+            });
+
+            // Inicializar os dropdowns
+            setupDropdown({
+                triggerId: 'selectTrigger',
+                dropdownId: 'selectDropdown',
+                searchId: 'searchContatos',
+                inputId: 'numeros_input',
+                context: 'contato'
+            });
+
+            setupDropdown({
+                triggerId: 'mensagemTrigger',
+                dropdownId: 'mensagemDropdown',
+                searchId: 'searchMensagens',
+                inputId: 'mensagem_input',
+                context: 'mensagem'
+            });
+        });
+   
+        //controlar a exibição dos contatos:
+        document.addEventListener('DOMContentLoaded', function() {
+            const contatosHeader = document.getElementById('contatosHeader');
+            const contatosBody = document.getElementById('contatosBody');
+            const toggleIcon = document.querySelector('#toggleContacts i');
+
+            contatosHeader.addEventListener('click', function() {
+                const isVisible = contatosBody.style.display !== 'none';
+                contatosBody.style.display = isVisible ? 'none' : 'block';
+                toggleIcon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+            });
+        });
+
+        // Controle de exibição das mensagens
+        document.addEventListener('DOMContentLoaded', function() {
+            const mensagensHeader = document.getElementById('mensagensHeader');
+            const mensagensBody = document.getElementById('mensagensBody');
+            const toggleIcon = document.querySelector('#toggleMessages i');
+
+            mensagensHeader.addEventListener('click', function() {
+                const isVisible = mensagensBody.style.display !== 'none';
+                mensagensBody.style.display = isVisible ? 'none' : 'block';
+                toggleIcon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+            });
+        });
+
+        // Função para expandir/contrair mensagens
+        function toggleMessage(button) {
+            const messageText = button.closest('.message-text');
+            const fullMessage = button.getAttribute('data-full-message');
+            const isExpanded = button.textContent.includes('Ver menos');
+            
+            if (isExpanded) {
+                messageText.innerHTML = `${fullMessage.substring(0, 100)}
+                    <span class="message-ellipsis">...</span>
+                    <button class="show-more" onclick="toggleMessage(this)" 
+                            data-full-message="${fullMessage}">
+                        Ver mais
+                    </button>`;
+            } else {
+                messageText.innerHTML = `${fullMessage}
+                    <button class="show-more" onclick="toggleMessage(this)" 
+                            data-full-message="${fullMessage}">
+                        Ver menos
+                    </button>`;
+            }
+        }
+
+        function inserirNome() {
+            var textarea = document.getElementById('mensagem_input');
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            var text = textarea.value;
+            var before = text.substring(0, start);
+            var after = text.substring(end);
+            var insertText = "{{ '{{nome}}' }}";
+            textarea.value = before + insertText + after;
+            textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
+            textarea.focus();
+        }
+
+        function inserirNomeNovaMensagem() {
+            var textarea = document.getElementById('nova_mensagem');
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            var text = textarea.value;
+            var before = text.substring(0, start);
+            var after = text.substring(end);
+            var insertText = "{{ '{{nome}}' }}";
+            textarea.value = before + insertText + after;
+            textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
+            textarea.focus();
+        }
+    </script>
+</body>
+</html>

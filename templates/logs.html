@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico - WhatsApp Scheduler</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #25D366;
+            --primary-dark: #128C7E;
+            --secondary-color: #34B7F1;
+            --text-color: #2C3E50;
+            --text-light: #7F8C8D;
+            --background-color: #F8F9FA;
+            --white: #FFFFFF;
+            --danger: #E74C3C;
+            --success: #27AE60;
+            --warning: #F1C40F;
+            --border-radius: 12px;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--white);
+        }
+
+        input[type="text"]:focus,
+        input[type="datetime-local"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .button-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .button-danger {
+            background-color: var(--danger);
+        }
+
+        .button-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .button-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        th {
+            background-color: #F7FAFC;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: var(--warning);
+            color: #000000;
+        }
+
+        .status-sent {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .status-error {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-card {
+            flex: 1;
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .quick-action-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .cancel-btn {
+            background-color: var(--danger);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .cancel-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        .status-cancelled {
+            background-color: #95a5a6;
+        }
+
+        th {
+            position: relative;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #EDF2F7;
+        }
+
+        th::after {
+            content: '↕';
+            position: absolute;
+            right: 8px;
+            color: var(--text-light);
+            opacity: 0.5;
+        }
+
+        th.sorted::after {
+            content: '↓';
+            opacity: 1;
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            transition: var(--transition);
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                margin: 0 -1rem;
+            }
+            
+            table {
+                font-size: 0.875rem;
+            }
+            
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+
+        .card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* estilo paginação */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .pagination-container .button {
+            padding: 0.5rem 1rem;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        .pagination-container .button-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .button-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .button-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fab fa-whatsapp"></i> Histórico de Mensagens</h1>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('pending')">Agendamentos Pendentes</div>
+            <div class="tab" onclick="showTab('history')">Histórico de Envios</div>
+        </div>
+
+        <div id="pending-tab" class="card table-container">
+            <h2><i class="fas fa-clock"></i> Agendamentos Pendentes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Responsável</th>
+                        <th>Número</th>
+                        <th>Mensagem</th>
+                        <th>Data e Hora</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agendamento in agendamentos %}
+                        {% if agendamento.status == "Pendente" %}
+                        <tr>
+                            <td>{{ agendamento.responsavel }}</td>
+                            <td>{{ numero_para_nome.get(agendamento.numero, agendamento.numero) }}</td>
+                            <td>{{ agendamento.mensagem }}</td>
+                            <td>{{ agendamento.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <span class="status-badge status-pending">Pendente</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('cancelar_agendamento', id=agendamento.id) }}" 
+                                   class="cancel-btn" 
+                                   onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="history-tab" class="card table-container" style="display: none;">
+            <h2><i class="fas fa-history"></i> Histórico de Mensagens</h2>
+            
+            <!-- Botão Limpar Histórico -->
+            <form action="{{ url_for('limpar_historico') }}" method="post" 
+                  onsubmit="return confirm('Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.');"
+                  style="margin-bottom: 1rem;">
+                <button type="submit" class="button button-danger">
+                    <i class="fas fa-trash"></i> Limpar Histórico
+                </button>
+            </form>
+        
+            <!-- Info de total de registros -->
+            <div style="margin-bottom: 1rem; color: var(--text-light);">
+                Total de registros: {{ total_logs }}
+            </div>
+        
+            <table>
+                <thead>
+                    <tr>
+                        <th>Responsável</th>
+                        <th>Contato</th>
+                        <th>Mensagem</th>
+                        <th>Data e Hora</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log[0] }}</td>
+                        <td>{{ numero_para_nome.get(log[1], log[1]) }}</td>
+                        <td>{{ log[2] }}</td>
+                        <td>{{ log[3] }}</td>
+                        <td>
+                            {% if log[4] == "Cancelado" %}
+                            <span class="status-badge status-cancelled">Cancelado</span>
+                            {% elif "Erro" in log[4] %}
+                            <span class="status-badge status-error">{{ log[4] }}</span>
+                            {% else %}
+                            <span class="status-badge status-sent">{{ log[4] }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+            <!-- Paginação -->
+            {% if total_pages > 1 %}
+            <div class="pagination" style="margin-top: 1rem; text-align: center;">
+                <div class="pagination-container">
+                    {% if current_page > 1 %}
+                    <a href="{{ url_for('logs', page=1) }}" class="button button-outline">&laquo; Primeira</a>
+                    <a href="{{ url_for('logs', page=current_page-1) }}" class="button button-outline">&lsaquo; Anterior</a>
+                    {% endif %}
+        
+                    {% set start_page = [current_page - 2, 1] | max %}
+                    {% set end_page = [start_page + 4, total_pages] | min %}
+                    {% set start_page = [end_page - 4, 1] | max %}
+        
+                    {% for p in range(start_page, end_page + 1) %}
+                    <a href="{{ url_for('logs', page=p) }}" 
+                       class="button {% if p == current_page %}button-primary{% else %}button-outline{% endif %}">
+                        {{ p }}
+                    </a>
+                    {% endfor %}
+        
+                    {% if current_page < total_pages %}
+                    <a href="{{ url_for('logs', page=current_page+1) }}" class="button button-outline">Próxima &rsaquo;</a>
+                    <a href="{{ url_for('logs', page=total_pages) }}" class="button button-outline">Última &raquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="button button-outline">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Função para mostrar/esconder tabs
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const pendingTab = document.getElementById('pending-tab');
+            const historyTab = document.getElementById('history-tab');
+    
+            tabs.forEach(tab => tab.classList.remove('active'));
+    
+            if (tabName === 'pending') {
+                pendingTab.style.display = 'block';
+                historyTab.style.display = 'none';
+                tabs[0].classList.add('active');
+                // Salva a preferência do usuário
+                localStorage.setItem('activeTab', 'pending');
+            } else {
+                pendingTab.style.display = 'none';
+                historyTab.style.display = 'block';
+                tabs[1].classList.add('active');
+                localStorage.setItem('activeTab', 'history');
+            }
+        }
+    
+        // Restaura a última tab selecionada
+        document.addEventListener('DOMContentLoaded', function() {
+            const lastTab = localStorage.getItem('activeTab');
+            if (lastTab) {
+                showTab(lastTab);
+            }
+        });
+    
+        // Confirmação personalizada para cancelamento
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.')) {
+                    window.location.href = this.href;
+                }
+            });
+        });
+    
+        // Atualização automática da página a cada 30 segundos
+        setInterval(function() {
+            if (!document.hidden) {  // Só atualiza se a página estiver visível
+                window.location.reload();
+            }
+        }, 30000);
+    
+        // Indicador de última atualização
+        const lastUpdateSpan = document.createElement('div');
+        lastUpdateSpan.style.textAlign = 'right';
+        lastUpdateSpan.style.color = 'var(--text-light)';
+        lastUpdateSpan.style.fontSize = '0.875rem';
+        lastUpdateSpan.style.marginTop = '1rem';
+        lastUpdateSpan.textContent = 'Última atualização: ' + new Date().toLocaleTimeString();
+        document.querySelector('.container').appendChild(lastUpdateSpan);
+    
+        // Ordenação das tabelas
+        document.querySelectorAll('th').forEach((th, index) => {
+            th.style.cursor = 'pointer';
+            th.addEventListener('click', () => {
+                const table = th.closest('table');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                rows.sort((a, b) => {
+                    const aText = a.cells[index].textContent.trim();
+                    const bText = b.cells[index].textContent.trim();
+                    
+                    // Tenta ordenar como data se a coluna for de data/hora
+                    if (aText.match(/^\d{2}\/\d{2}\/\d{4}/)) {
+                        const aDate = new Date(aText.split('/').reverse().join('-'));
+                        const bDate = new Date(bText.split('/').reverse().join('-'));
+                        return aDate - bDate;
+                    }
+                    
+                    return aText.localeCompare(bText);
+                });
+                
+                // Inverte a ordem se clicar novamente
+                if (th.classList.contains('sorted')) {
+                    rows.reverse();
+                    th.classList.remove('sorted');
+                } else {
+                    document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+                    th.classList.add('sorted');
+                }
+                
+                tbody.append(...rows);
+            });
+        });
+
+        // Adiciona funcionalidade de pesquisa
+        function addSearchField(tableContainer) {
+            const searchDiv = document.createElement('div');
+            searchDiv.style.marginBottom = '1rem';
+            searchDiv.innerHTML = `
+                <input type="text" 
+                    placeholder="Pesquisar..." 
+                    style="max-width: 300px; margin-bottom: 1rem;"
+                    class="search-input">
+            `;
+            
+            const input = searchDiv.querySelector('input');
+            const table = tableContainer.querySelector('table');
+            
+            input.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = table.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+            
+            tableContainer.insertBefore(searchDiv, table);
+        }
+
+        // Adiciona campos de pesquisa às tabelas
+        document.querySelectorAll('.table-container').forEach(addSearchField);
+
+        // Adiciona contadores de registros
+        function updateCounters() {
+            const pendingCount = document.querySelectorAll('#pending-tab tbody tr:not([style*="display: none"])').length;
+            const historyCount = document.querySelectorAll('#history-tab tbody tr:not([style*="display: none"])').length;
+            
+            document.querySelector('#pending-tab h2').innerHTML = 
+                `<i class="fas fa-clock"></i> Agendamentos Pendentes <span style="color: var(--text-light); font-size: 0.9em;">(${pendingCount} registros)</span>`;
+            
+            document.querySelector('#history-tab h2').innerHTML = 
+                `<i class="fas fa-history"></i> Histórico de Mensagens <span style="color: var(--text-light); font-size: 0.9em;">(${historyCount} registros)</span>`;
+        }
+
+        // Atualiza contadores inicialmente e após pesquisas
+        updateCounters();
+        document.querySelectorAll('.search-input').forEach(input => {
+            input.addEventListener('input', updateCounters);
+        });
+
+        // Adiciona funcionalidade de exportação
+        function addExportButton(container) {
+            const button = document.createElement('button');
+            button.className = 'button button-outline';
+            button.style.marginBottom = '1rem';
+            button.style.marginLeft = '1rem';
+            button.innerHTML = '<i class="fas fa-download"></i> Exportar CSV';
+            
+            button.addEventListener('click', function() {
+                const table = container.querySelector('table');
+                const rows = Array.from(table.querySelectorAll('tr'));
+                
+                const csvContent = rows
+                    .map(row => {
+                        return Array.from(row.cells)
+                            .map(cell => '"' + cell.textContent.replace(/"/g, '""') + '"')
+                            .join(',');
+                    })
+                    .join('\n');
+                
+                const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'whatsapp_' + container.id + '_' + new Date().toISOString().slice(0,10) + '.csv');
+                link.style.visibility = 'hidden';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            container.querySelector('.search-input').parentNode.appendChild(button);
+        }
+
+        // Adiciona botões de exportação às tabelas
+        document.querySelectorAll('.table-container').forEach(addExportButton);
+
+        // Melhoria no indicador de atualização
+        function updateLastUpdateIndicator() {
+            const now = new Date();
+            lastUpdateSpan.innerHTML = `
+                <i class="fas fa-sync-alt" style="margin-right: 0.5rem;"></i>
+                Última atualização: ${now.toLocaleTimeString()}
+                <button onclick="window.location.reload()" class="button button-outline" 
+                        style="padding: 0.25rem 0.5rem; margin-left: 0.5rem; font-size: 0.875rem;">
+                    <i class="fas fa-redo"></i> Atualizar
+                </button>
+            `;
+        }
+
+        // Atualiza o indicador a cada 30 segundos
+        setInterval(updateLastUpdateIndicator, 30000);
+        updateLastUpdateIndicator();
+
+        // Adiciona tooltips melhorados
+        document.querySelectorAll('td').forEach(td => {
+            // Verifica se a célula não é de status ou ação e tem texto longo
+            const isStatusCell = td.querySelector('.status-badge');
+            const isActionCell = td.querySelector('.cancel-btn');
+            
+            if (!isStatusCell && !isActionCell && td.textContent.length > 50) {
+                const fullText = td.textContent;
+                td.textContent = td.textContent.substring(0, 50) + '...';
+                
+                // Cria um tooltip personalizado
+                td.addEventListener('mouseenter', function(e) {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'custom-tooltip';
+                    tooltip.textContent = fullText;
+                    tooltip.style.position = 'absolute';
+                    tooltip.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                    tooltip.style.color = 'white';
+                    tooltip.style.padding = '0.5rem';
+                    tooltip.style.borderRadius = '4px';
+                    tooltip.style.fontSize = '0.875rem';
+                    tooltip.style.maxWidth = '300px';
+                    tooltip.style.wordBreak = 'break-word';
+                    tooltip.style.zIndex = '1000';
+                    
+                    document.body.appendChild(tooltip);
+                    
+                    const updatePosition = () => {
+                        const rect = td.getBoundingClientRect();
+                        tooltip.style.left = rect.left + 'px';
+                        tooltip.style.top = (rect.bottom + 5) + 'px';
+                    };
+                    
+                    updatePosition();
+                    window.addEventListener('scroll', updatePosition);
+                    
+                    td.addEventListener('mouseleave', function() {
+                        tooltip.remove();
+                        window.removeEventListener('scroll', updatePosition);
+                    }, { once: true });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
